@@ -46,13 +46,14 @@ foreach ($svc in $services) {
 # ghost scheduled tasks: Get-ScheduledTask | State -ne Disabled, actions whose Execute path is gone (match 'OurPlay' style by wildcard, Chinese task names break literals)
 ```
 
-## 5. Cache-regrowth quick list (this user's usual suspects)
+## 5. Cache-regrowth quick list
+
+**The authoritative full list now lives in `cache-map.md` (read it every round — mandatory).** The entries below are the round-1 legacy subset, kept for backwards compatibility:
 
 | Path | Note |
 |---|---|
-| `$env:APPDATA\kingsoft\wps\addons\pool` | WPS plugin cache, regrows to 1-2GB in ~1 week |
-| `$env:LOCALAPPDATA\Google\Chrome\User Data\OptGuideOnDeviceModel` | must stay absent (policy-guarded) |
+| `%APPDATA%\kingsoft\wps\addons\pool` | WPS plugin cache, regrows to 1-2GB in ~1 week |
+| `%LOCALAPPDATA%\Google\Chrome\User Data\OptGuideOnDeviceModel` | must stay absent (policy-guarded) |
 | `C:\ProgramData\NVIDIA Corporation\NVIDIA app\UpdateFramework\ota-artifacts` | driver installer leftovers |
-| `$env:LOCALAPPDATA\Temp` (skip dirs containing swap.vhdx), CrashDumps, C:\Windows\Temp/Logs | routine |
-| `$env:LOCALAPPDATA\KOOK`, `...\Ubisoft Game Launcher\cache` | old-version dirs / webcache |
+| `%LOCALAPPDATA%\Temp` (skip dirs containing swap.vhdx), CrashDumps, C:\Windows\Temp/Logs | routine |
 | Docker: `docker system df` + dangling images + volumes with LINKS=0 | anonymous orphan volumes |

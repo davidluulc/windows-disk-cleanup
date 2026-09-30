@@ -21,11 +21,11 @@ Expected recovery: 1-9GB per vhdx (ext4 ~2-4GB, docker_data can give 6-9GB after
 
 ## 2. Restoring containers after compaction — NEVER bare `docker compose up`
 
-A compose file with `${MINIO_LOCAL_IMAGE:-minio/minio:RELEASE...}` resolves the default when env is missing → "No such image" on locally-tagged stacks. Always restore via the project's own launcher:
+A compose file with `${MINIO_LOCAL_IMAGE:-minio/minio:RELEASE...}` resolves the default when env is missing → "No such image" on locally-tagged stacks. Always restore via the project's own launcher, e.g.:
 ```bash
-wsl -d Ubuntu -- bash -lc "cd ~/ShieldAssist && SKIP_OCR_IMAGE=1 make -f infra/backend.mk local-infra-up"
+wsl -d <distro> -- bash -lc "cd ~/your-project && make -f infra/backend.mk <your-infra-target>"
 ```
-Find the right target: `grep -n 'local-infra-up' Makefile infra/backend.mk`, read `COMPOSE_LOCAL := ... --env-file ... -f ...`. Stopping = same target's `-down` variant or `docker compose ... down` (volumes survive; never `down -v` unless user wants data gone).
+Find the right target: `grep -n 'infra-up' Makefile infra/*.mk`, read the `COMPOSE_LOCAL := ... --env-file ... -f ...` line to see which env file injects the image variables. Stopping = same target's `-down` variant or `docker compose ... down` (volumes survive; never `down -v` unless user wants data gone).
 Verification: `docker ps` shows all `(healthy)`; migrations log "already applied" (data intact).
 
 ## 3. Elevation pattern
@@ -68,4 +68,15 @@ Elevated Task Manager: UIPI blocks both accessibility reads and window activatio
 - After "I pulled some docker images/projects" → compact vhdx (recipe 1+2).
 - After big Windows updates → check hiberfil.sys revival + restore points + `C:\Windows.old`.
 - Pagefile re-bloat after fixing = RAM pressure; discuss 32GB upgrade or lighter startup.
-- Chat app data (Feishu 5GB, WeChat, Bilibili) → clean INSIDE the app, never by folder deletion.
+- Chat app data (Feishu 6GB, WeChat, Bilibili) → clean INSIDE the app, never by folder deletion.
+
+## 9. Lessons from round 6 (2026-09-26 A/B experiment: skill flow vs free scan)
+
+- **Shader caches while a game runs = skip.** Rainbow Six was running; deleting DXCache (2.1GB) mid-game risks rendering corruption. Pre-check must enumerate game processes (`ELDEN|DARKSOULS|RainbowSix|...`) before touching GPU caches.
+- **App version coexistence is a recurring pattern**: KOOK had shipped a new version (0.110.0) while old (0.95.1, 461MB) remained. Always list `app-*` siblings, verify the newest is what runs, delete only the old ones.
+- **codex-runtimes** (`~/.cache/codex-runtimes`, 1.6GB) is a runtime binary cache — safe to delete when Codex is closed; it redownloads on next start. Codex config/auth live in `~/.codex` and are unaffected.
+- **pagefile.sys can read 0 bytes right after a reboot** even when the setting is correct — verify via `Win32_PageFileUsage` (AllocatedBaseSize) instead of file size.
+- **WSL-internal cleanup must happen BEFORE vhdx compaction**, while the distro is running; then `wsl --shutdown` and compact. Compacting without internal cleanup frees almost nothing (0-1GB on a 17GB vhdx).
+- **Progressive-disclosure trap**: a reference file that is only "read on demand" will be SKIPPED under time pressure — 4GB of findings were missed in the A/B test because the cache table lived in references and was never read. Fix applied: mandatory read instruction in SKILL.md + dedicated `cache-map.md`.
+- **Attributed growth ≠ junk**: Program Files (x86) +28GB was a new Steam game (DARK SOULS III). Deep-dive to attribute, then reclassify as protected user content.
+- **Free-form scan complements the fixed checklist**: pure memory-based lookups can hit stale targets (ms-playwright/Douyin already deleted), but they caught all four NEW hotspot types the static checklist missed. The write-back loop (Phase 6) is what merges the two strengths.
