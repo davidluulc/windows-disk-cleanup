@@ -43,12 +43,19 @@
 
 | Path | What it is | Typical size | Confirm date |
 |---|---|---|---|
-| `%APPDATA%\baidu\BaiduNetdisk` | Baidu Netdisk cache/data | 1.3-1.9 GB | 2026-09-26 (1883MB) |
-| `%APPDATA%\LarkShell` (+ `%LOCALAPPDATA%\Feishu`) | Feishu cache — clean inside the app (settings → clear cache) to keep chat history | 4-6 GB | 2026-09-26 (6.0GB) |
+| `%APPDATA%\LarkShell\aha\users\<uid>\profile_main\WebStorage` | Feishu embedded-web (workbench/mini-app) local storage — **the real 2GB bomb**; standard Cache dirs only hold ~550MB | 2 GB | 2026-09-30 (2005MB) |
+| `%APPDATA%\LarkShell\aha\users\<uid>\profile_explorer\Service Worker` | Feishu SW resource cache — pure web cache, zero-risk delete | 1.7 GB | 2026-09-30 (1740MB) |
+| `%APPDATA%\LarkShell\aha\users\<uid>\doubao\sandbox_envs_dir` | Feishu built-in AI (Doubao) sandbox runtime copy — auto-rebuilds on next use | 0.8 GB | 2026-09-30 (761MB) |
+| `%APPDATA%\baidu\BaiduNetdisk` | ⚠️ TRAP: this is the PROGRAM INSTALL DIR (BaiduNetdisk.exe, kernel.dll, module\=1.27GB components). Only `AutoUpdate` (~58MB) is cleanable. Do NOT delete module or the exe files | 1.8 GB total, ~0.06 cleanable | 2026-09-30 |
+| `%APPDATA%\bilibili\IndexedDB` | Bilibili client playback/preload data — the 1.1GB bomb (login stays in Local Storage) | 1.1 GB | 2026-09-30 (1123MB) |
 | `%APPDATA%\Tencent` | QQ data — in-app clean only | 2.4-3.3 GB | 2026-09-26 (2983MB) |
-| `%APPDATA%\bilibili`, `%APPDATA%\douyin` | Media app caches | 0.7-1.3 GB each | 2026-09-19 |
+| `%APPDATA%\bilibili`, `%APPDATA%\douyin` | Media app caches (bilibili structure: ffmpeg/player/resource = program, do not touch) | 0.7-1.3 GB each | 2026-09-19 |
 | `%APPDATA%\Telegram Desktop` | Telegram cache — in-app clean | ~1 GB | 2026-09-19 |
-| `%USERPROFILE%\xwechat_files` | WeChat files — in-app clean (settings → file management) | 2.9-4.1 GB | 2026-09-19 |
+| `%USERPROFILE%\xwechat_files` | WeChat files — in-app clean (settings → file management). USER PROHIBITED from automated cleaning (2026-09-30) | 2.9-4.1 GB | 2026-09-19 |
+
+### Feishu deep-cleaning pattern (learned 2026-09-30)
+
+Feishu's `aha\users\<uid>\profile_*` dirs are Chromium profiles; the obvious `Cache` subdirs hold only ~550MB. The real mass hides in non-standard dirs: **WebStorage** (embedded-web storage), **Service Worker** (SW cache), and doubao's **sandbox_envs_dir**. Standard-cache-name matching misses 4.5GB of 5.9GB. When an Electron app's known caches come up short, drill one level into the profiles and chase the biggest subdirs by NAME CATEGORY: SW caches and sandbox/runtime copies = safe; WebStorage = resets embedded-app local state only (chat/login unaffected, login lives in Cookies). Total achievable: 5.9GB → 0.77GB (−87%).
 
 ## WSL-internal caches (clean INSIDE Ubuntu before compacting vhdx)
 

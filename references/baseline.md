@@ -3,6 +3,22 @@
 > Machine: Windows 11 dev laptop, 16GB RAM, C: 449.5GB total.
 > All sizes in GB unless noted. "~" = user profile. Measured with admin PowerShell unless noted.
 
+## 2026-09-30 (round 6.5, disk free 84.5 pre / 97.7 post — total 13.2GB)
+
+| Location | Size |
+|---|---|
+| C:\Program Files (x86) | 161.55 (Steam unchanged: ELDEN 52.15, R6 53.89, DS3 24.82) |
+| C:\Users | 100.87 |
+| ~\AppData | 80.18 → post-clean ~75 (LarkShell 6.14→0.77, bilibili 1.32→0.19) |
+| ~\Desktop | 2.12 |
+| ~\.zcode | 1.71 |
+| ~\.codex | 1.38 |
+| pagefile.sys | 15.76 (at 16GB cap, RAM pressure) |
+| ext4.vhdx | 16.05 / docker_data.vhdx 2.98 |
+| WPS Office | single version 12.1.0.28505 (28043 deleted 1.44GB) |
+| NVIDIA DXCache | 2.1 GB (RainbowSix was running — SKIPPED, still pending) |
+| Ghost/orphan regs | IntelliJ, Overcooked, FLiNG, Wand (user chose to keep) |
+
 ## 2026-09-26 (round 6, disk free 84.8 pre / 89.5 post)
 
 | Location | Size |
